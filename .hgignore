@@ -1,6 +1,9 @@
 syntax: glob
 
 *.egg-info
+*.pyc
+
+tmp
 
 # buildout paths
 bin

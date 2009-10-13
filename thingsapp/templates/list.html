@@ -1,0 +1,17 @@
+<html>
+  <head>
+	<title>My Things</title>
+  </head>
+
+  <body>
+	<h1>To Dos</h1>
+	{% for to_do in to_dos %}
+	<li>{{ to_do.name() }}
+	  {% if to_do.project() != k.missing_value %}
+	    <b>({{to_do.project().name()}})</b>
+		{{to_do.status()}}
+	  {% endif %}
+	</li>
+	{% endfor %}
+  </body>
+</html>
