@@ -100,7 +100,10 @@ class ToDo(AppleScriptObject):
 
 class Project(ToDo):
 
-    pass
+    @property
+    def to_dos(self):
+        return [o for o in self._things.to_dos.values()
+                if not isinstance(o, Project)]
 
 class Area(AppleScriptObject):
 
@@ -120,19 +123,6 @@ class FocusList(tuple):
                 for props in props_list]
 
 
-def load_objects():
-    things = Things()
-
-    LOG.debug('loading LogBook')
-    for o in things.logbook:
-        print o.name,
-        if o.project != k.missing_value:
-            print '(of project:', o.project.name, ')',
-        if o.area != k.missing_value:
-            print '(of AREA:', o.area.name,  ')',
-        print
-    
-
 def dump_todos():
     things = Things()
     
@@ -144,15 +134,14 @@ def dump_todos():
                 to_dos=things.logbook,
                 k=k))
 
-    raise SystemExit, 'break'
-    for project in things.projects:
+    for project in things.projects.values():
         pathname = project.name.replace('/', '-')
         LOG.info('writing project %s', project.name)
         with open('tmp/project-{0}.html'.format(pathname), 'w') as f:
             f.write(render_template(
                     'list.html',
                     title='Project: {0}'.format(project.name),
-                    to_dos=project.XYXYXYX,
+                    to_dos=project.to_dos,
                     k=k))
 
 play = dump_todos
