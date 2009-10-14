@@ -14,14 +14,17 @@ class Things(object):
     def __init__(self):
         self.t = app('Things')
         
-        # map ID of a to_do to the properties dictionary
-        self.to_dos = {}
-        self.projects = {}
-        self.areas = {}
+        # map ID of a to_do/area to the wrapper object
+        self._to_dos = {}
+        self._areas = {}
 
         # map ID of a to_do to the ID of a project/area
         self._projectmap = {}
         self._areamap = {}
+
+        self.to_dos = []
+        self.projects = []
+        self.areas = []
 
         self._load()
 
@@ -29,22 +32,24 @@ class Things(object):
         """Load all todos, projects and areas from Things applescript"""
         LOG.debug('loading to_dos')
         for props in self.t.to_dos.properties():
-            self.to_dos[props[k.id]] = o = AppleScriptObject.create(self, props)
+            self._to_dos[props[k.id]] = o = AppleScriptObject.create(self, props)
+            self.to_dos.append(o)
             if isinstance(o, Project):
-                self.projects[props[k.id]] = o
+                self.projects.append(o)
             
         LOG.debug('loading areas')
         for props in self.t.areas.properties():
-            self.areas[props[k.id]] = AppleScriptObject.create(self, props)
+            self._areas[props[k.id]] = o = AppleScriptObject.create(self, props)
+            self.areas.append(o)
 
         LOG.debug('assigning projects (might take some time)')
-        for obj in self.to_dos.values():
+        for obj in self.to_dos:
             prj = obj._props[k.project]
             if prj != k.missing_value:
                 self._projectmap[obj.id] = prj.id()
 
         LOG.debug('assigning areas (might take some time)')
-        for obj in self.to_dos.values():
+        for obj in self.to_dos:
             area = obj._props[k.area]
             if area != k.missing_value:
                 self._areamap[obj.id] = area.id()
@@ -87,7 +92,7 @@ class ToDo(AppleScriptObject):
         project = self._props[k.project]
         if project != k.missing_value:
             project_id = self._things._projectmap[self.id]
-            project = self._things.to_dos[project_id]
+            project = self._things._to_dos[project_id]
         return project
 
     @property
@@ -95,14 +100,14 @@ class ToDo(AppleScriptObject):
         area = self._props[k.area]
         if area != k.missing_value:
             area_id = self._things._areamap[self.id]
-            area = self._things.areas[area_id]
+            area = self._things._areas[area_id]
         return area
 
 class Project(ToDo):
 
     @property
     def to_dos(self):
-        return [o for o in self._things.to_dos.values()
+        return [o for o in self._things.to_dos
                 if not isinstance(o, Project)]
 
 class Area(AppleScriptObject):
@@ -119,7 +124,7 @@ class FocusList(tuple):
     @classmethod
     def _load(cls, things, focusname):
         props_list = things.t.lists[focusname].to_dos.properties()
-        return [things.to_dos[props[k.id]]
+        return [things._to_dos[props[k.id]]
                 for props in props_list]
 
 
@@ -134,7 +139,7 @@ def dump_todos():
                 to_dos=things.logbook,
                 k=k))
 
-    for project in things.projects.values():
+    for project in things.projects:
         pathname = project.name.replace('/', '-')
         LOG.info('writing project %s', project.name)
         with open('tmp/project-{0}.html'.format(pathname), 'w') as f:
