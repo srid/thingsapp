@@ -5,7 +5,7 @@ version = '0.1.0'
 
 setup(name='thingsapp',
       version=version,
-      description="Things.app utility scripts",
+      description="Python bindings for accessing Things.app",
       long_description="""\
 """,
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -19,7 +19,6 @@ setup(name='thingsapp',
       zip_safe=False,
       install_requires=[
           'appscript',
-          'cmdln',
       ],
       entry_points={
         'console_scripts':
