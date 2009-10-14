@@ -9,7 +9,33 @@ LOG = logging.getLogger(__name__)
 
 
 class Things(object):
-    """Represent a running Things application"""
+    """Represent a running Things application
+
+    Initialling the ``Things`` objects will pull *all* data from the running
+    Things.app as faster as possible. It should take about 4 seconds.
+
+    >>> things = Things()
+
+    Then you can access the to dos, projects and areas are simple lists.
+
+    >>> things.to_dos
+    >>> things.projects
+    >>> things.areas
+
+    Each item of the list is a simple Python object representing the underlying
+    Things data, for instance::
+
+    >>> things.to_dos[0].name
+    'Submit the final proposal'
+    >>> things.to_dos[0].project.name
+    'PyCon 2010'
+
+    You can also access the focus lists in Things::
+
+    >>> things.inbox
+    >>> things.logbook
+    >>> ...
+    """
 
     def __init__(self):
         self.t = app('Things')
@@ -56,9 +82,18 @@ class Things(object):
 
         LOG.debug('loading focus lists')
         self.inbox = FocusList(self, 'inbox')
+        self.today = FocusList(self, 'today')
+        self.next = FocusList(self, 'next')
+        self.scheduled = FocusList(self, 'scheduled')
+        self.someday = FocusList(self, 'someday')
         self.logbook = FocusList(self, 'logbook')
 
 class AppleScriptObject(object):
+    """A wrapper around appscript's Reference
+
+    This wrapper enables one to access the properties of the Referenced object
+    using Pythonic dotted reference.
+    """
 
     @classmethod
     def create(cls, things, props):
@@ -86,6 +121,10 @@ class AppleScriptObject(object):
                 name, self._props)
 
 class ToDo(AppleScriptObject):
+    """Represents a to do object in Things.
+
+    Note that projects are also a to do object
+    """
 
     @property
     def project(self):
@@ -104,6 +143,10 @@ class ToDo(AppleScriptObject):
         return area
 
 class Project(ToDo):
+    """Represents a project object in Things.
+
+    Projects are to dos with sub to dos in them
+    """
 
     @property
     def to_dos(self):
@@ -111,10 +154,14 @@ class Project(ToDo):
                 if not isinstance(o, Project)]
 
 class Area(AppleScriptObject):
+    """Represents an area in Things."""
 
-    pass
 
 class FocusList(tuple):
+    """Represent the various focus lists in Things
+
+    Examples: Inbox, Next, LogBook, etc...
+    """
 
     def __new__(cls, things, focusname):
         return super(FocusList, cls).__new__(
@@ -128,7 +175,7 @@ class FocusList(tuple):
                 for props in props_list]
 
 
-def dump_todos():
+def play():
     things = Things()
     
     LOG.info('writing logbook')
@@ -148,5 +195,3 @@ def dump_todos():
                     title='Project: {0}'.format(project.name),
                     to_dos=project.to_dos,
                     k=k))
-
-play = dump_todos
