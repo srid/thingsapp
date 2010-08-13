@@ -6,19 +6,18 @@ version = '0.1.0'
 setup(name='thingsapp',
       version=version,
       description="Python bindings for accessing Things.app",
-      long_description="""\
-""",
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='',
+      keywords='gtd things mac html',
       author='Sridhar Ratnakumar',
       author_email='srid@nearfar.org',
-      url='http://workspace.activestate.com/sridharr/thingsapp',
-      license='BSD',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      url='http://github.com/srid/thingsapp',
+      license='MIT',
+      packages=find_packages(exclude=['examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
       install_requires=[
           'appscript',
+          'flask',
       ],
       entry_points={
         'console_scripts':
