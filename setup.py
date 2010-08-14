@@ -17,7 +17,7 @@ setup(name='thingsapp',
       zip_safe=False,
       install_requires=[
           'appscript',
-          'flask',
+          'jinja2',
       ],
       entry_points={
         'console_scripts':
