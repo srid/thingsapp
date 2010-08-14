@@ -142,7 +142,11 @@ class ToDo(AppleScriptObject):
         area = self._props[k.area]
         if area != k.missing_value:
             area_id = self._things._areamap[self.id]
-            area = self._things._areas[area_id]
+            if area_id not in self.things._areas:
+                LOG.warn('missing area id %s', area_id)
+                area = k.missing_value
+            else:
+                area = self._things._areas[area_id]
         return area
 
 
@@ -155,7 +159,7 @@ class Project(ToDo):
     @property
     def to_dos(self):
         return [o for o in self._things.to_dos
-                if not isinstance(o, Project)]
+                if not isinstance(o, Project) and o.project == self]
 
 
 class Area(AppleScriptObject):
