@@ -6,7 +6,8 @@
   <body>
 	<h1>{{title}}</h1>
 	{% for to_do in to_dos %}
-	<li>{{ to_do.name }}
+	<li {% if to_do.status == k.completed %}style="color: gray;"{% endif %}>
+      {{ to_do.name }}
 	  {% if to_do.project != k.missing_value %}
 	    <b>(<a href="project-{{to_do.project.name}}.html">
 			{{to_do.project.name}}
