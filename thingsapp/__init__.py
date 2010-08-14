@@ -12,11 +12,12 @@ class Things(object):
     """Represent a running Things application
 
     Initialling the ``Things`` objects will pull *all* data from the running
-    Things.app as faster as possible. It should take about 4 seconds.
+    Things.app as fast as possible - which duration depends on the number tasks
+    in your Things library.
 
     >>> things = Things()
 
-    Then you can access the to dos, projects and areas are simple lists.
+    Then you can access the to dos, projects and areas as simple lists.
 
     >>> things.to_dos
     >>> things.projects
@@ -30,7 +31,7 @@ class Things(object):
     >>> things.to_dos[0].project.name
     'PyCon 2010'
 
-    You can also access the focus lists in Things::
+    You can also access the various focus lists in Things::
 
     >>> things.inbox
     >>> things.logbook
@@ -88,8 +89,9 @@ class Things(object):
         self.someday = FocusList(self, 'someday')
         self.logbook = FocusList(self, 'logbook')
 
+
 class AppleScriptObject(object):
-    """A wrapper around appscript's Reference
+    """A wrapper around appscript's Reference object
 
     This wrapper enables one to access the properties of the Referenced object
     using Pythonic dotted reference.
@@ -120,6 +122,7 @@ class AppleScriptObject(object):
             raise AttributeError, 'Property "%s" missing in props: %s' % (
                 name, self._props)
 
+
 class ToDo(AppleScriptObject):
     """Represents a to do object in Things.
 
@@ -142,6 +145,7 @@ class ToDo(AppleScriptObject):
             area = self._things._areas[area_id]
         return area
 
+
 class Project(ToDo):
     """Represents a project object in Things.
 
@@ -152,6 +156,7 @@ class Project(ToDo):
     def to_dos(self):
         return [o for o in self._things.to_dos
                 if not isinstance(o, Project)]
+
 
 class Area(AppleScriptObject):
     """Represents an area in Things."""
