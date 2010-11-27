@@ -1,10 +1,6 @@
-*.egg-info
 *.pyc
-
-tmp/*
-
-# buildout paths
+.Python
+include
+lib
 bin
-develop-eggs
-parts
-.installed.cfg
+*.egg-info
